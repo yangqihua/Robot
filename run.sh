@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-`nohup php ./src/run.php > robot_cron.log 2>&1 &`
+`nohup php ./src/run.php --session=yang > robot_cron.log 2>&1 &`
