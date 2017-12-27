@@ -21,7 +21,7 @@ class MessageHandler
 {
     public static function messageHandler(Collection $message)
     {
-        vbot('console')->log('来自'.$message['from']['UserName'].'的消息，消息类型为：'.$message['type'].'，内容为：'.$message['content'], '自定义消息');
+//        vbot('console')->log('来自'.$message['from']['UserName'].'的消息，消息类型为：'.$message['type'].'，内容为：'.$message['content'], '自定义消息');
 //        Text::send($message['from']['UserName'], 'Hi! I\'m Vbot');
         /** @var Friends $friends */
         $friends = vbot('friends');
@@ -40,9 +40,11 @@ class MessageHandler
         TextType::messageHandler($message, $friends, $groups);
         RecallType::messageHandler($message);
 
+
+
         if ($message['type'] === 'new_friend') {
             Text::send($message['from']['UserName'], '客官，等你很久了！感谢跟 vbot 交朋友，如果可以帮我点个star，谢谢了！https://github.com/HanSon/vbot');
-            $groups->addMember($groups->getUsernameByNickname('Vbot 体验群'), $message['from']['UserName']);
+//            $groups->addMember($groups->getUsernameByNickname('Vbot 体验群'), $message['from']['UserName']);
             Text::send($message['from']['UserName'], '现在拉你进去vbot的测试群，进去后为了避免轰炸记得设置免骚扰哦！如果被不小心踢出群，跟我说声“拉我”我就会拉你进群的了。');
         }
 
