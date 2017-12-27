@@ -29,8 +29,8 @@ class Observer
     public static function setFetchContactObserver(array $contacts)
     {
         vbot('console')->log('获取好友成功', '自定义消息');
-        File::saveTo(__DIR__.'/group.json', \GuzzleHttp\json_encode($contacts['groups']));
-        File::saveTo(__DIR__.'/friends.json', \GuzzleHttp\json_encode($contacts['friends']));
+        File::saveTo(__DIR__.'/../data/group.json', \GuzzleHttp\json_encode($contacts['groups']));
+        File::saveTo(__DIR__.'/../data/friends.json', \GuzzleHttp\json_encode($contacts['friends']));
     }
 
     public static function setBeforeMessageObserver()

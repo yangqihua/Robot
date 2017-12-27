@@ -4,10 +4,12 @@ src/config
 src/run.php
 composer.json
 .DS_Store
+*.log
 
 /vendor/
 /.idea
 /runtime
+/data
 composer.lock
 
 # Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file

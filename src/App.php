@@ -7,7 +7,7 @@ use Vbot\Blacklist\Blacklist;
 use Vbot\GuessNumber\GuessNumber;
 use Vbot\HotGirl\HotGirl;
 
-class Example
+class App
 {
     private $config;
 
