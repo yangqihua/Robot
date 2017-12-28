@@ -6,6 +6,7 @@ use Hanson\Vbot\Foundation\Vbot as Bot;
 use Vbot\Blacklist\Blacklist;
 use Vbot\GuessNumber\GuessNumber;
 use Vbot\HotGirl\HotGirl;
+use Vbot\Tuling\Tuling;
 
 class App
 {
@@ -28,6 +29,7 @@ class App
 
         $robot->messageExtension->load([
             // some extensions
+//            Tuling::class,
 //            Blacklist::class,
 //            GuessNumber::class,
 //            HotGirl::class,

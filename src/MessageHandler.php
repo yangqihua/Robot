@@ -33,7 +33,9 @@ class MessageHandler
         /** @var Groups $groups */
         $groups = vbot('groups');
 
-        MainHandler::messageHandler($message, $friends, $groups);
+        $myself = vbot('myself');
+
+        MainHandler::messageHandler($message, $friends, $groups,$myself);
 
 //        Hanson::messageHandler($message, $friends, $groups);
 //        ColleagueGroup::messageHandler($message, $friends, $groups);

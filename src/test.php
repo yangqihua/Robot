@@ -6,6 +6,6 @@ require __DIR__.'/../vendor/autoload.php';
 
 use app\handlers\MainHandler;
 
-$result = MainHandler::request('0','12','123');
+$result = MainHandler::request('购物','12','0');
 
-print $result;
+var_dump($result);

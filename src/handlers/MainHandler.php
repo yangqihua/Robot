@@ -10,6 +10,7 @@ namespace app\handlers;
 
 use Hanson\Vbot\Contact\Friends;
 use Hanson\Vbot\Contact\Groups;
+use Hanson\Vbot\Contact\Myself;
 use Hanson\Vbot\Message\Text;
 use Illuminate\Support\Collection;
 use app\common\Http;
@@ -18,7 +19,7 @@ class MainHandler
 {
     public static $baseUrl = 'http://192.168.1.105/quan/public/index.php/api/robot/';
 
-    public static function messageHandler(Collection $message, Friends $friends, Groups $groups)
+    public static function messageHandler(Collection $message, Friends $friends, Groups $groups, Myself $myself)
     {
         $type = $message['type'];
         switch ($type) {
@@ -38,7 +39,8 @@ class MainHandler
                 break;
             // 处理 文案
             case 'text':
-                self::handlerText($message);
+                $selfName = $myself['NickName'];
+                self::handlerText($message, $myself);
                 break;
             default:
                 vbot('console')->log('<' . $message['from']['NickName'] . '>发送消息：' . $message['content']);
@@ -47,7 +49,7 @@ class MainHandler
     }
 
     // 处理 文案
-    public static function handlerText($message)
+    public static function handlerText($message, $selfName)
     {
         $fromType = $message['fromType'];
         $content = trim($message['isAt'] ? $message['pure'] : $message['content']);
@@ -60,49 +62,52 @@ class MainHandler
             } else {
                 vbot('console')->log('<' . $message['from']['NickName'] . '>发送消息：' . $content);
             }
-            switch ($content) {
-                case '帮助':
-                    Text::send($message['from']['UserName'], self::getConfig('help'));
-                    break;
-                // 其他文案 后台去处理
-                default:
-                    if ($isAtInGroup) {
-                        $result = self::request($content, $username, '1');
-                        vbot('console')->log('【群聊@】请求后台返回结果：<' . \GuzzleHttp\json_encode($result,JSON_UNESCAPED_UNICODE) . '>');
-                    } else {
-                        $result = self::request($content, $username, '0');
-                        vbot('console')->log('【私聊】请求后台返回结果：<' . \GuzzleHttp\json_encode($result,JSON_UNESCAPED_UNICODE) . '>');
-                    }
+            if ($isAtInGroup) {
+                $result = self::request($content, $username, $selfName, '1');
+                vbot('console')->log('【群聊@】请求后台返回结果：<' . \GuzzleHttp\json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
+            } else {
+                $result = self::request($content, $username, $selfName, '0');
+                vbot('console')->log('【私聊】请求后台返回结果：<' . \GuzzleHttp\json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
+            }
 
-                    // 只有当服务器返回200 的时候才回复消息
-                    if ($result['code'] == 200) {
-                        Text::send($message['from']['UserName'], $result['data']);
-                    }
-                    break;
+            // 只有当服务器返回200 的时候才回复消息
+            if ($result['code'] == 200) {
+                Text::send($message['from']['UserName'], $result['data']);
             }
         }
     }
 
-    public static function request($content, $username, $isGroup = '0')
+    public static function request($content, $username, $selfName, $isGroup = '0')
     {
-        $url = self::$baseUrl . 'request';
+        $url = self::$baseUrl . 'dispatchs';
+//        $url = 'http://192.168.1.105/quan/public/index.php/api/robot/dispatchs';
         $result = Http::get($url,
             [
                 'content' => $content,
                 'user_id' => $username,
-                'is_group'=> $isGroup
+                'is_group' => $isGroup,
+                'self_name' => $selfName,
             ]
         );
-        if($result){
-            $result = \GuzzleHttp\json_decode($result,true);
-            if(!$result){
-                return ['code'=>500,'data'=>''];
+        self::log("服务器服务原始数据" . $result);
+        if (stristr($result, "<!DOCTYPE html")) {
+            return ['code' => 500, 'data' => ''];
+        }
+        if ($result) {
+            $result = \GuzzleHttp\json_decode($result, true);
+            if (!$result) {
+                return ['code' => 500, 'data' => ''];
             }
             return $result;
-        }else{
-            return ['code'=>500,'data'=>''];
+        } else {
+            return ['code' => 500, 'data' => ''];
         }
 
+    }
+
+    public static function log($message)
+    {
+//        vbot('console')->log($message);
     }
 
     public static function getConfig($key)
