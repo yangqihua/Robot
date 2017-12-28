@@ -5,6 +5,7 @@ src/run.php
 composer.json
 .DS_Store
 *.log
+src/test.php
 
 /vendor/
 /.idea
