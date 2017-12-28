@@ -39,8 +39,8 @@ class MainHandler
                 break;
             // 处理 文案
             case 'text':
-                $selfName = $myself['NickName'];
-                self::handlerText($message, $myself);
+                $selfName = $myself->nickname;
+                self::handlerText($message, $selfName);
                 break;
             default:
                 vbot('console')->log('<' . $message['from']['NickName'] . '>发送消息：' . $message['content']);
@@ -89,7 +89,7 @@ class MainHandler
                 'self_name' => $selfName,
             ]
         );
-        self::log("服务器服务原始数据" . $result);
+//        self::log("服务器服务原始数据" . $result);
         if (stristr($result, "<!DOCTYPE html")) {
             return ['code' => 500, 'data' => ''];
         }
@@ -107,7 +107,7 @@ class MainHandler
 
     public static function log($message)
     {
-//        vbot('console')->log($message);
+        vbot('console')->log($message);
     }
 
     public static function getConfig($key)
@@ -115,16 +115,6 @@ class MainHandler
         $config = [
             'first' => '一一一一添 加 成 功一一一一
 送您2元现金，回复 余额 可查看 
-
-输入宝贝信息，获取领券链接
-返利教学： http://t.cn/RHcBT0x
-
-输入  签到   可以领取签到红包
-输入  余额   可以查看余额等信息
-输入  提现   满10元机器人可以给你发红包
-输入  帮助   可以查看指令',
-
-            'help' => '一一一一帮 助一一一一
 
 输入宝贝信息，获取领券链接
 返利教学： http://t.cn/RHcBT0x
