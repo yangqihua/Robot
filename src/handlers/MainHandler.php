@@ -17,8 +17,8 @@ use app\common\Http;
 
 class MainHandler
 {
-//    public static $baseUrl = 'http://127.0.0.1/quan/public/index.php/api/robot/';
-    public static $baseUrl = 'http://192.168.1.105/quan/public/index.php/api/robot/';
+    public static $baseUrl = 'http://127.0.0.1/quan/public/index.php/api/robot/';
+//    public static $baseUrl = 'http://192.168.1.105/quan/public/index.php/api/robot/';
 
     public static function messageHandler(Collection $message, Friends $friends, Groups $groups, Myself $myself)
     {
