@@ -66,7 +66,7 @@ class MainHandler
                 $result = self::request($content, $username, $selfName,$message['sender']['NickName'], '1');
                 vbot('console')->log('【群聊@】请求后台返回结果：<' . \GuzzleHttp\json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
             } else {
-                $result = self::request($content, $username, $selfName,'', '0');
+                $result = self::request($content, $username, $selfName,$message['from']['NickName'], '0');
                 vbot('console')->log('【私聊】请求后台返回结果：<' . \GuzzleHttp\json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
             }
 
