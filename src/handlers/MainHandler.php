@@ -17,6 +17,7 @@ use app\common\Http;
 
 class MainHandler
 {
+//    public static $baseUrl = 'http://127.0.0.1/quan/public/index.php/api/robot/';
     public static $baseUrl = 'http://192.168.1.105/quan/public/index.php/api/robot/';
 
     public static function messageHandler(Collection $message, Friends $friends, Groups $groups, Myself $myself)
@@ -30,12 +31,27 @@ class MainHandler
                 break;
             // 同意添加好友后发送 第一次 文案
             case 'new_friend':
+
+//                vbot('console')->log('成功添加<' . $message['from']['NickName'] . '>为好友');
+//                Text::send($message['from']['UserName'], self::getConfig('first'));
+//
+//                $result = Http::get(self::$baseUrl . 'add', ['content' => '',
+//                    'user_id' => $message['from']['UserName'], 'user_name' => $message['from']['NickName'],
+//                    'province' => $message['from']['Province'], 'city' => $message['from']['City'], 'sex' => $message['from']['Sex']]);
+//
+//                vbot('console')->log('同意添加好友后请求服务器返回<' . $result . '>');
+
+
                 vbot('console')->log('成功添加<' . $message['from']['NickName'] . '>为好友');
-                Text::send($message['from']['UserName'], self::getConfig('first'));
                 $result = Http::get(self::$baseUrl . 'add', ['content' => '',
                     'user_id' => $message['from']['UserName'], 'user_name' => $message['from']['NickName'],
                     'province' => $message['from']['Province'], 'city' => $message['from']['City'], 'sex' => $message['from']['Sex']]);
                 vbot('console')->log('同意添加好友后请求服务器返回<' . $result . '>');
+                $result = self::wrapResult($result);
+                // 只有当服务器返回200 的时候才回复消息
+                if ($result['code'] == 200 && $result['data']) {
+                    Text::send($message['from']['UserName'], $result['data']);
+                }
                 break;
             // 处理 文案
             case 'text':
@@ -64,14 +80,14 @@ class MainHandler
             }
             if ($isAtInGroup) {
                 $result = self::request($content, $username, $selfName,$message['sender']['NickName'], '1');
-                vbot('console')->log('【群聊@】请求后台返回结果：<' . \GuzzleHttp\json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
+                vbot('console')->log('【群聊@】请求后台返回结果：<' . json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
             } else {
                 $result = self::request($content, $username, $selfName,$message['from']['NickName'], '0');
-                vbot('console')->log('【私聊】请求后台返回结果：<' . \GuzzleHttp\json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
+                vbot('console')->log('【私聊】请求后台返回结果：<' . json_encode($result, JSON_UNESCAPED_UNICODE) . '>');
             }
 
             // 只有当服务器返回200 的时候才回复消息
-            if ($result['code'] == 200) {
+            if ($result['code'] == 200 && $result['data']) {
                 Text::send($message['from']['UserName'], $result['data']);
             }
         }
@@ -80,7 +96,6 @@ class MainHandler
     public static function request($content, $username, $selfName,$senderName ,$isGroup = '0')
     {
         $url = self::$baseUrl . 'dispatchs';
-//        $url = 'http://192.168.1.105/quan/public/index.php/api/robot/dispatchs';
         $result = Http::get($url,
             [
                 'content' => $content,
@@ -95,12 +110,13 @@ class MainHandler
     }
 
     public static function wrapResult($result){
+        self::log("服务器返回原始结果：".$result);
         if (stristr($result, "<!DOCTYPE html")) {
             return ['code' => 500, 'data' => '服务器异常'];
         }
         if ($result) {
-            $result = \GuzzleHttp\json_decode($result, true);
-            if (!$result) {
+            $result = json_decode($result, true);
+            if (json_last_error() !== JSON_ERROR_NONE || !$result) {
                 return ['code' => 500, 'data' => 'json解析出错'];
             }
             return $result;
